@@ -37,7 +37,7 @@ namespace MioBot.Job
     #endregion
 
     #region 摸鱼日历
-    internal class MoyuCaleJob : IJob
+    internal class MoyuCaleJobBuilder : IJob
     {
         public Task Execute(IJobExecutionContext context)
         {
@@ -49,14 +49,14 @@ namespace MioBot.Job
             });
         }
     }
-    internal class MoyuCale
+    internal class MoyuCaleJob
     {
         public static IJobDetail Detail()
         {
-            IJobDetail job = JobBuilder.Create<MoyuCaleJob>()      //获取JobBuilder
-                            .WithIdentity("MoyuCale", "Daily")     //添加Job的名字和分组
-                            .WithDescription("获取摸鱼日历并推送") //添加描述
-                            .Build();                              //生成IJobDetail
+            IJobDetail job = JobBuilder.Create<MoyuCaleJobBuilder>()    //获取JobBuilder
+                            .WithIdentity("MoyuCale", "Daily")          //添加Job的名字和分组
+                            .WithDescription("获取摸鱼日历并推送")      //添加描述
+                            .Build();                                   //生成IJobDetail
             return job;
         }
     }
