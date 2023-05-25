@@ -10,7 +10,7 @@ namespace MioBot.Bot
 {
     internal class Qmsg
     {
-        public static JsonObject Private(string qq, string msg)
+        public static JsonObject Send(string qq, string msg)
         {
             var confighelper = new ConfigHelper();
             var httpClient = new HttpClient();

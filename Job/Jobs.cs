@@ -25,12 +25,12 @@ namespace MioBot.Job
 
     internal class DailyNewsJob
     {
-        public static IJobDetail Package()
+        public static IJobDetail Detail()
         {
-            IJobDetail job = JobBuilder.Create<DailyNewsJobBuilder>()       //获取JobBuilder
+            IJobDetail job = JobBuilder.Create<DailyNewsJobBuilder>() //获取JobBuilder
                             .WithIdentity("DailyNews", "Daily")       //添加Job的名字和分组
-                            .WithDescription("获取每日新闻并推送")  //添加描述
-                            .Build();                           //生成IJobDetail
+                            .WithDescription("获取每日新闻并推送")    //添加描述
+                            .Build();                                 //生成IJobDetail
             return job;
         }
     }
@@ -49,6 +49,17 @@ namespace MioBot.Job
             });
         }
     }
+    internal class MoyuCale
+    {
+        public static IJobDetail Detail()
+        {
+            IJobDetail job = JobBuilder.Create<MoyuCaleJob>()      //获取JobBuilder
+                            .WithIdentity("MoyuCale", "Daily")     //添加Job的名字和分组
+                            .WithDescription("获取摸鱼日历并推送") //添加描述
+                            .Build();                              //生成IJobDetail
+            return job;
+        }
+    }
     #endregion
 
     #region 测试任务
@@ -65,12 +76,38 @@ namespace MioBot.Job
 
     internal class TestJob
     {
-        public static IJobDetail Package()
+        public static IJobDetail Detail()
         {
             IJobDetail job = JobBuilder.Create<TestJobBuilder>()       //获取JobBuilder
                             .WithIdentity("Test", "Loop")       //添加Job的名字和分组
                             .WithDescription("一个简单的任务")  //添加描述
                             .Build();                           //生成IJobDetail
+            return job;
+        }
+    }
+    #endregion
+
+    #region 测试消息
+    internal class TestJobBuilder2 : IJob
+    {
+        public Task Execute(IJobExecutionContext context)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                string str = "现在时间：{0}" + DateTime.Now;
+                Qmsg.Send("913682980", str);
+            });
+        }
+    }
+
+    internal class TestJob2
+    {
+        public static IJobDetail Detail()
+        {
+            IJobDetail job = JobBuilder.Create<TestJobBuilder2>() //获取JobBuilder
+                            .WithIdentity("Test2", "Loop")        //添加Job的名字和分组
+                            .WithDescription("循环发送消息")      //添加描述
+                            .Build();                             //生成IJobDetail
             return job;
         }
     }

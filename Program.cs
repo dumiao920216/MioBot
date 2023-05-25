@@ -3,19 +3,12 @@ using MioBot.Job;
 using Quartz;
 using Quartz.Impl;
 
-//加载日志
+//初始化日志
 NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-logger.Debug("日志记录已开启");
 
-//创建任务调度器
-StdSchedulerFactory factory = new();
-IScheduler scheduler = factory.GetScheduler().Result;
-scheduler.Start();
-logger.Debug("任务调度器已创建");
-
-//加载任务
-scheduler.ScheduleJob(TestJob.Package(), Trigger.L000005());
-logger.Debug("任务已加载");
+//初始化调度器
+Scheduler.Start().GetAwaiter().GetResult();
+logger.Debug("开始运行：定时任务");
 
 //初始化窗体
 while (true)
