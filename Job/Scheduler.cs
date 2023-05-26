@@ -21,11 +21,14 @@ namespace MioBot.Job
             logger.Debug("正在配置：调度器已创建");
 
             //注册任务
-            await scheduler.ScheduleJob(DailyNewsJob.Detail(), Trigger.D083000());
+            await scheduler.ScheduleJob(DailyNewsJob.Job(), DailyNewsJob.Trigger());
             logger.Debug("正在配置：任务【每日新闻】已添加");
 
-            await scheduler.ScheduleJob(MoyuCaleJob.Detail(), Trigger.D083000());
-            logger.Debug("正在配置：任务【每日新闻】已添加");
+            await scheduler.ScheduleJob(MoyuCaleJob.Job(), MoyuCaleJob.Trigger());
+            logger.Debug("正在配置：任务【摸鱼日历】已添加");
+
+            await scheduler.ScheduleJob(PublicOfferJob.Job(), PublicOfferJob.Trigger());
+            logger.Debug("正在配置：任务【工作推送】已添加");
 
             //启动调度器
             await scheduler.Start();

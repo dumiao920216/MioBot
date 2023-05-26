@@ -10,28 +10,44 @@ using System.Threading.Tasks;
 namespace MioBot.Job
 {
     #region 每日新闻
-    internal class DailyNewsJobBuilder : IJob
+    internal class DailyNewsBuilder : IJob
     {
+        readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Factory.StartNew(() =>
             {
-                var json_news = DailyNews.Get();
-                string str_news = "@image=" + json_news["data"]!["image"]!.ToString() + "@";
-                Qmsg.Group("827859510", str_news);
+                try
+                {
+                    var json_news = DailyNews.Get();
+                    string str_news = "@image=" + json_news["data"]!["image"]!.ToString() + "@";
+                    Qmsg.Group("827859510", str_news);
+                    logger.Info("消息已推送");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex);
+                }
             });
         }
     }
-
     internal class DailyNewsJob
     {
-        public static IJobDetail Detail()
+        public static IJobDetail Job()
         {
-            IJobDetail job = JobBuilder.Create<DailyNewsJobBuilder>() //获取JobBuilder
+            IJobDetail job = JobBuilder.Create<DailyNewsBuilder>() //获取JobBuilder
                             .WithIdentity("DailyNews", "Daily")       //添加Job的名字和分组
                             .WithDescription("获取每日新闻并推送")    //添加描述
                             .Build();                                 //生成IJobDetail
             return job;
+        }
+        public static ITrigger Trigger()
+        {
+            ITrigger trigger = TriggerBuilder.Create()
+            .WithIdentity("DailyNews", "Daily")
+            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(8, 30))
+            .Build();
+            return trigger;
         }
     }
     #endregion
@@ -39,19 +55,28 @@ namespace MioBot.Job
     #region 摸鱼日历
     internal class MoyuCaleJobBuilder : IJob
     {
+        readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Factory.StartNew(() =>
             {
-                var json_news = MoyuCale.Get();
-                string str_news = "@image=" + json_news["data"]!["image"]!.ToString() + "@";
-                Qmsg.Group("827859510", str_news);
+                try
+                {
+                    var json_moyu = MoyuCale.Get();
+                    string str_news = "@image=" + json_moyu["data"]!["image"]!.ToString() + "@";
+                    Qmsg.Group("827859510", str_news);
+                    logger.Info("消息已推送");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex);
+                }
             });
         }
     }
     internal class MoyuCaleJob
     {
-        public static IJobDetail Detail()
+        public static IJobDetail Job()
         {
             IJobDetail job = JobBuilder.Create<MoyuCaleJobBuilder>()    //获取JobBuilder
                             .WithIdentity("MoyuCale", "Daily")          //添加Job的名字和分组
@@ -59,56 +84,58 @@ namespace MioBot.Job
                             .Build();                                   //生成IJobDetail
             return job;
         }
-    }
-    #endregion
-
-    #region 测试任务
-    internal class TestJobBuilder : IJob
-    {
-        public Task Execute(IJobExecutionContext context)
+        public static ITrigger Trigger()
         {
-            return Task.Factory.StartNew(() =>
-            {
-                Console.WriteLine("现在时间:{0}", DateTime.Now);
-            });
-        }
-    }
-
-    internal class TestJob
-    {
-        public static IJobDetail Detail()
-        {
-            IJobDetail job = JobBuilder.Create<TestJobBuilder>()       //获取JobBuilder
-                            .WithIdentity("Test", "Loop")       //添加Job的名字和分组
-                            .WithDescription("一个简单的任务")  //添加描述
-                            .Build();                           //生成IJobDetail
-            return job;
+            ITrigger trigger = TriggerBuilder.Create()
+            .WithIdentity("MoyuCale", "Daily")
+            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(8, 45))
+            .Build();
+            return trigger;
         }
     }
     #endregion
 
-    #region 测试消息
-    internal class TestJobBuilder2 : IJob
+    #region 工作推送
+    internal class PublicOfferBuilder : IJob
     {
+        readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Factory.StartNew(() =>
             {
-                string str = "现在时间：{0}" + DateTime.Now;
-                Qmsg.Send("913682980", str);
+                try
+                {
+                    var list_offer = PublicOffer.Get();
+                    list_offer.ForEach(x =>
+                    {
+                        Qmsg.Send("913682980", x);
+                    });
+                    logger.Info("消息已推送");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex);
+                }
             });
         }
     }
-
-    internal class TestJob2
+    internal class PublicOfferJob
     {
-        public static IJobDetail Detail()
+        public static IJobDetail Job()
         {
-            IJobDetail job = JobBuilder.Create<TestJobBuilder2>() //获取JobBuilder
-                            .WithIdentity("Test2", "Loop")        //添加Job的名字和分组
-                            .WithDescription("循环发送消息")      //添加描述
-                            .Build();                             //生成IJobDetail
+            IJobDetail job = JobBuilder.Create<PublicOfferBuilder>() //获取JobBuilder
+                            .WithIdentity("PublicOffer", "Daily")       //添加Job的名字和分组
+                            .WithDescription("爬取事业单位招聘信息并推送")    //添加描述
+                            .Build();                                 //生成IJobDetail
             return job;
+        }
+        public static ITrigger Trigger()
+        {
+            ITrigger trigger = TriggerBuilder.Create()
+            .WithIdentity("PublicOffer", "Daily")
+            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(9, 0))
+            .Build();
+            return trigger;
         }
     }
     #endregion
