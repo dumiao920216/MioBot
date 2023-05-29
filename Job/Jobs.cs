@@ -1,5 +1,6 @@
 ﻿using MioBot.Bot;
 using MioBot.Func;
+using MioBot.Helper;
 using Quartz;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,24 @@ namespace MioBot.Job
     internal class DailyNewsBuilder : IJob
     {
         readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        readonly ConfigHelper confighelper = new();
         public Task Execute(IJobExecutionContext context)
         {
+            //获取群号
+            var group_number = confighelper.ReadSetting("group").Split(",");
+
             return Task.Factory.StartNew(() =>
             {
                 try
                 {
                     var json_news = DailyNews.Get();
                     string str_news = "@image=" + json_news["data"]!["image"]!.ToString() + "@";
-                    Qmsg.Group("827859510", str_news);
-                    logger.Info("消息已推送");
+                    foreach (var item in group_number) 
+                    {
+                        Qmsg.Group(item, str_news);
+                        Task.Delay(1000).Wait();
+                    }
+                    logger.Info("【每日新闻】消息已推送");
                 }
                 catch (Exception ex)
                 {
@@ -56,16 +65,23 @@ namespace MioBot.Job
     internal class MoyuCaleJobBuilder : IJob
     {
         readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        readonly ConfigHelper confighelper = new();
         public Task Execute(IJobExecutionContext context)
         {
+            var group_number = confighelper.ReadSetting("group").Split(",");
+
             return Task.Factory.StartNew(() =>
             {
                 try
                 {
                     var json_moyu = MoyuCale.Get();
                     string str_news = "@image=" + json_moyu["data"]!["image"]!.ToString() + "@";
-                    Qmsg.Group("827859510", str_news);
-                    logger.Info("消息已推送");
+                    foreach (var item in group_number)
+                    {
+                        Qmsg.Group(item, str_news);
+                        Task.Delay(1000).Wait();
+                    }
+                    logger.Info("【摸鱼日历】消息已推送");
                 }
                 catch (Exception ex)
                 {
@@ -109,8 +125,9 @@ namespace MioBot.Job
                     list_offer.ForEach(x =>
                     {
                         Qmsg.Send("913682980", x);
+                        Task.Delay(1000).Wait();
                     });
-                    logger.Info("消息已推送");
+                    logger.Info("【工作推送】消息已推送");
                 }
                 catch (Exception ex)
                 {

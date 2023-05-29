@@ -10,6 +10,7 @@ namespace MioBot.Bot
 {
     internal class Qmsg
     {
+        #region 个人消息
         public static JsonObject Send(string qq, string msg)
         {
             var confighelper = new ConfigHelper();
@@ -26,7 +27,9 @@ namespace MioBot.Bot
             //推送请求
             return JsonNode.Parse(response)!.AsObject();
         }
-        //Task<HttpResponseMessage>
+        #endregion
+
+        #region 群发推送
         public static JsonObject Group(string qq, string msg)
         {
             var confighelper = new ConfigHelper();
@@ -43,5 +46,6 @@ namespace MioBot.Bot
             //推送请求
             return JsonNode.Parse(response)!.AsObject();
         }
+        #endregion
     }
 }
