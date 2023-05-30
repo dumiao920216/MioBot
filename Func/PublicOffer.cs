@@ -53,6 +53,10 @@ namespace MioBot.Func
                     }
                 }
             }));
+            if (list.Count == 0 ) 
+            {
+                list.Add("今天暂时没有新的岗位消息，明天再来看吧~");
+            }
             return list;
         }
     }

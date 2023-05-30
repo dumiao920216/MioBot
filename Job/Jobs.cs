@@ -75,7 +75,7 @@ namespace MioBot.Job
                 try
                 {
                     var json_moyu = MoyuCale.Get();
-                    string str_news = "@image=" + json_moyu["data"]!["image"]!.ToString() + "@";
+                    string str_news = "@image=" + json_moyu["url"]!.ToString() + "@";
                     foreach (var item in group_number)
                     {
                         Qmsg.Group(item, str_news);

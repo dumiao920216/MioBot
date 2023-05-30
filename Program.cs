@@ -10,7 +10,8 @@ Scheduler.Start().GetAwaiter().GetResult();
 logger.Debug("开始运行：计划任务");
 
 //初始化网络监听
-Server.Start();
+Server.Start().GetAwaiter().GetResult();
+logger.Debug("开始运行：网络监听");
 
 //初始化窗体
 while (true)
