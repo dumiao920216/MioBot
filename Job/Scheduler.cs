@@ -10,7 +10,7 @@ namespace MioBot.Job
 {
     internal class Scheduler
     {
-        public static async Task Start()
+        public static async void Start()
         {
             //初始化日志
             NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();

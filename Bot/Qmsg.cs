@@ -13,10 +13,10 @@ namespace MioBot.Bot
         #region 个人消息
         public static JsonObject Send(string qq, string msg)
         {
-            var confighelper = new ConfigHelper();
+            //var confighelper = new ConfigHelper();
             var httpClient = new HttpClient();
             //拼装链接
-            var token = confighelper.ReadSetting("token");
+            var token = ConfigHelper.ReadSetting("token");
             var url = "https://qmsg.zendee.cn:443/send/" + token;
             //构造返回
             var response = httpClient.PostAsync(url, new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
@@ -32,10 +32,10 @@ namespace MioBot.Bot
         #region 群发推送
         public static JsonObject Group(string qq, string msg)
         {
-            var confighelper = new ConfigHelper();
+            //var confighelper = new ConfigHelper();
             var httpClient = new HttpClient();
             //拼装链接
-            var token = confighelper.ReadSetting("token");
+            var token = ConfigHelper.ReadSetting("token");
             var url = "https://qmsg.zendee.cn:443/group/" + token;
             //构造返回
             var response = httpClient.PostAsync(url, new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()

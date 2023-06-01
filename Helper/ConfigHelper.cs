@@ -9,7 +9,7 @@ namespace MioBot.Helper
 {
     internal class ConfigHelper
     {
-        public String ReadSetting(string key)
+        public static String ReadSetting(string key)
         {
             var appSettings = ConfigurationManager.AppSettings;
             string result = appSettings[key]!;

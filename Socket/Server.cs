@@ -17,20 +17,20 @@ namespace MioBot.Socket
     internal class Server
     {
         //初始化日志
-        static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public static Task Start()
+        public static async void Start()
         {
             //构造监听
-            ConfigHelper configHelper = new();
-            var port = configHelper.ReadSetting("Port");
-            IPEndPoint ip = new(IPAddress.Any ,Convert.ToInt32(port));
+            //ConfigHelper configHelper = new();
+            var port = ConfigHelper.ReadSetting("Port");
+            IPEndPoint ip = new(IPAddress.Any, Convert.ToInt32(port));
             TcpListener server = new(ip);
 
             //启动服务
-            server.Start();
+            await Task.Run(() => server.Start());
             logger.Info("Socket服务已启动");
-            
+
             //获取连接
             TcpClient client = server.AcceptTcpClient();
             logger.Info("MioBotApi已连接");
@@ -41,7 +41,7 @@ namespace MioBot.Socket
             {
                 while (!stream.DataAvailable) ;
                 Byte[] bytes = new Byte[client.Available];
-                stream.Read(bytes, 0, bytes.Length);
+                stream.Read(bytes);
                 logger.Info("收到请求：" + System.Text.Encoding.Default.GetString(bytes));
                 //调用路由
                 FuncRouter(System.Text.Encoding.Default.GetString(bytes));
@@ -49,7 +49,6 @@ namespace MioBot.Socket
                 stream.Write(System.Text.Encoding.ASCII.GetBytes("ACK"));
             }
         }
-
         private static void FuncRouter(string msg)
         {
             //分割请求

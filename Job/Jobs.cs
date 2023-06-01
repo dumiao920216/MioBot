@@ -14,11 +14,11 @@ namespace MioBot.Job
     internal class DailyNewsBuilder : IJob
     {
         readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        readonly ConfigHelper confighelper = new();
+        //readonly ConfigHelper confighelper = new();
         public Task Execute(IJobExecutionContext context)
         {
             //获取群号
-            var group_number = confighelper.ReadSetting("group").Split(",");
+            var group_number = ConfigHelper.ReadSetting("group").Split(",");
 
             return Task.Factory.StartNew(() =>
             {
@@ -65,10 +65,9 @@ namespace MioBot.Job
     internal class MoyuCaleJobBuilder : IJob
     {
         readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        readonly ConfigHelper confighelper = new();
         public Task Execute(IJobExecutionContext context)
         {
-            var group_number = confighelper.ReadSetting("group").Split(",");
+            var group_number = ConfigHelper.ReadSetting("group").Split(",");
 
             return Task.Factory.StartNew(() =>
             {
