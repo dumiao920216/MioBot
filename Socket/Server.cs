@@ -11,6 +11,9 @@ using System.Web;
 using System.ComponentModel;
 using MioBot.Func_Ack;
 using NLog;
+using System.Security.AccessControl;
+using System.Drawing.Printing;
+using System.Reflection.Metadata;
 
 namespace MioBot.Socket
 {
@@ -59,14 +62,11 @@ namespace MioBot.Socket
             //判断请求
             if (str.Contains("打招呼"))
             {
-                try
-                {
-                    Hello.Push(group, qq);
-                }
-                catch (Exception e)
-                {
-                    logger.Error(e);
-                }
+                Hello.Push(group, qq);
+            }
+            else if (str.Contains("美图"))
+            {
+                Picture.Push(group, qq, str);
             }
             else return;
         }
