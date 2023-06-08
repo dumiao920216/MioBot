@@ -15,35 +15,68 @@ namespace MioBot.Func_Ack
     {
         public static void Push(string group, string qq, string msg)
         {
+            _ = qq;
             //拆分关键词
             var keyword = msg.Trim()[3..];
-            if (keyword == "大都" || keyword == "大都未央" )
+            if (keyword.Contains("大都"))
             {
-                Qmsg.Group(group, "@at=" + qq + "@ 这个不能在这里发的啦…想看的话私聊我吧？");
+                Qmsg.Group(group, "这个不能在这里发的啦…想看的话加我好友私聊我吧？（不加好友不能发消息喔）");
             }
             else
             {
-                return;
+                //应答请求
+                Qmsg.Group(group, "正在寻找" + keyword + "的美图，请稍后");
+                //获取图片
+                var httpClient = new HttpClient();
+                var requesturl = "http://bjb.yunwj.top/php/tk/sj.php?mc=" + keyword;
+                var response = httpClient.GetAsync(requesturl).Result.Content;
+                var stream = response.ReadAsStreamAsync().Result;
+                var jpg = Image.FromStream(stream);
+                //创建当日文件夹
+                var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
+                if (!Directory.Exists(imgPathToday))
+                {
+                    Directory.CreateDirectory(imgPathToday);
+                }
+                //写入文件
+                var filename = Guid.NewGuid().ToString("N") + ".jpg";
+                jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                //推送数据
+                Qmsg.Group(group, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
             }
-            //应答请求
-            Qmsg.Group(group, "@at=" + qq + "@ 正在为你寻找" + keyword + "的美图，请稍后~");
-            //获取图片
-            var httpClient = new HttpClient();
-            var requesturl = "http://bjb.yunwj.top/php/tk/sj.php?mc=" + keyword;
-            var response = httpClient.GetAsync(requesturl).Result.Content;
-            var stream = response.ReadAsStreamAsync().Result;
-            var jpg = Image.FromStream(stream);
-            //创建当日文件夹
-            var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
-            if (!Directory.Exists(imgPathToday))
+        }
+
+        public static void Send(string qq, string msg)
+        {
+            //拆分关键词
+            var keyword = msg.Trim()[3..];
+            if (keyword.Contains("大都"))
             {
-                Directory.CreateDirectory(imgPathToday);
+                //暂时不发
+                Qmsg.Send(qq, "目前还没有喔…明天再来看吧？");
             }
-            //写入文件
-            var filename = Guid.NewGuid().ToString("N") + ".jpg";
-            jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-            //推送数据
-            Qmsg.Group(group, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
+            else
+            {
+                //应答请求
+                Qmsg.Send(qq, "正在寻找" + keyword + "的美图，请稍后");
+                //获取图片
+                var httpClient = new HttpClient();
+                var requesturl = "http://bjb.yunwj.top/php/tk/sj.php?mc=" + keyword;
+                var response = httpClient.GetAsync(requesturl).Result.Content;
+                var stream = response.ReadAsStreamAsync().Result;
+                var jpg = Image.FromStream(stream);
+                //创建当日文件夹
+                var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
+                if (!Directory.Exists(imgPathToday))
+                {
+                    Directory.CreateDirectory(imgPathToday);
+                }
+                //写入文件
+                var filename = Guid.NewGuid().ToString("N") + ".jpg";
+                jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                //推送数据
+                Qmsg.Send(qq, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
+            }
         }
     }
 }

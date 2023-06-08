@@ -60,15 +60,24 @@ namespace MioBot.Socket
             var qq = msgArray[1];
             var group = msgArray[2];
             //判断请求
-            if (str.Contains("打招呼"))
+            if (!String.IsNullOrEmpty(group)) //处理群消息
             {
-                Hello.Push(group, qq);
+                if (str.Contains("打招呼"))
+                {
+                    Hello.Push(group, qq);
+                }
+                else if (str.Contains("美图"))
+                {
+                    Picture.Push(group, qq, str);
+                }
             }
-            else if (str.Contains("美图"))
+            else //处理私聊消息
             {
-                Picture.Push(group, qq, str);
+                if (str.Contains("美图"))
+                {
+                    Picture.Send(qq, str);
+                }
             }
-            else return;
         }
     }
 }
