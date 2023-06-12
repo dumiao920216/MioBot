@@ -64,18 +64,25 @@ namespace MioBot.Func_Ack
                 var requesturl = "http://bjb.yunwj.top/php/tk/sj.php?mc=" + keyword;
                 var response = httpClient.GetAsync(requesturl).Result.Content;
                 var stream = response.ReadAsStreamAsync().Result;
-                var jpg = Image.FromStream(stream);
-                //创建当日文件夹
-                var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
-                if (!Directory.Exists(imgPathToday))
+                if (stream.Length > 0) 
                 {
-                    Directory.CreateDirectory(imgPathToday);
+                    var jpg = Image.FromStream(stream!);
+                    //创建当日文件夹
+                    var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
+                    if (!Directory.Exists(imgPathToday))
+                    {
+                        Directory.CreateDirectory(imgPathToday);
+                    }
+                    //写入文件
+                    var filename = Guid.NewGuid().ToString("N") + ".jpg";
+                    jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //推送数据
+                    Qmsg.Send(qq, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
                 }
-                //写入文件
-                var filename = Guid.NewGuid().ToString("N") + ".jpg";
-                jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-                //推送数据
-                Qmsg.Send(qq, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
+                else
+                {
+                    Qmsg.Send(qq, "哎呀…好像找不到" + keyword + "的美图，换个试试吧？");
+                }
             }
         }
     }
