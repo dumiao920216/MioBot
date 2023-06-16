@@ -70,6 +70,10 @@ namespace MioBot.Socket
                 {
                     Picture.Push(group, qq, str);
                 }
+                else if (str.Contains("小都状态"))
+                {
+                    Status.Group(group);
+                }
             }
             else //处理私聊消息
             {

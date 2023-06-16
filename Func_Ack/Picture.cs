@@ -1,5 +1,6 @@
 ﻿using MioBot.Bot;
 using MioBot.Helper;
+using Quartz.Util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -26,23 +27,18 @@ namespace MioBot.Func_Ack
             {
                 //应答请求
                 Qmsg.Group(group, "正在寻找" + keyword + "的美图，请稍后");
-                //获取图片
-                var httpClient = new HttpClient();
-                var requesturl = "http://bjb.yunwj.top/php/tk/sj.php?mc=" + keyword;
-                var response = httpClient.GetAsync(requesturl).Result.Content;
-                var stream = response.ReadAsStreamAsync().Result;
-                var jpg = Image.FromStream(stream);
-                //创建当日文件夹
-                var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
-                if (!Directory.Exists(imgPathToday))
+                var filename = GetPic(keyword);
+                if (!String.IsNullOrEmpty(filename))
                 {
-                    Directory.CreateDirectory(imgPathToday);
+                    //推送数据
+                    Qmsg.Group(group, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
                 }
-                //写入文件
-                var filename = Guid.NewGuid().ToString("N") + ".jpg";
-                jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-                //推送数据
-                Qmsg.Group(group, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
+                else
+                {
+                    //找不到时推送提示
+                    Qmsg.Group(group, "哎呀…好像找不到" + keyword + "的美图，换个试试吧？");
+                }
+                
             }
         }
 
@@ -60,29 +56,45 @@ namespace MioBot.Func_Ack
                 //应答请求
                 Qmsg.Send(qq, "正在寻找" + keyword + "的美图，请稍后");
                 //获取图片
-                var httpClient = new HttpClient();
-                var requesturl = "http://bjb.yunwj.top/php/tk/sj.php?mc=" + keyword;
-                var response = httpClient.GetAsync(requesturl).Result.Content;
-                var stream = response.ReadAsStreamAsync().Result;
-                if (stream.Length > 0) 
+                var filename = GetPic(keyword);
+                if (!String.IsNullOrEmpty(filename))
                 {
-                    var jpg = Image.FromStream(stream!);
-                    //创建当日文件夹
-                    var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
-                    if (!Directory.Exists(imgPathToday))
-                    {
-                        Directory.CreateDirectory(imgPathToday);
-                    }
-                    //写入文件
-                    var filename = Guid.NewGuid().ToString("N") + ".jpg";
-                    jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
                     //推送数据
                     Qmsg.Send(qq, "@image=" + ConfigHelper.ReadSetting("imgServer") + DateTime.Now.ToString("yyyyMMdd") + "/" + filename + "@");
                 }
                 else
                 {
+                    //找不到时推送提示
                     Qmsg.Send(qq, "哎呀…好像找不到" + keyword + "的美图，换个试试吧？");
                 }
+            }
+        }
+
+        private static string GetPic(string keyword)
+        {
+            var httpClient = new HttpClient();
+            var requesturl = "http://bjb.yunwj.top/php/tk/sj.php?mc=" + keyword;
+            var response = httpClient.GetAsync(requesturl).Result.Content;
+            var stream = response.ReadAsStreamAsync().Result;
+            if (stream.Length > 0)
+            {
+                var jpg = Image.FromStream(stream!);
+                //创建当日文件夹
+                var imgPathToday = ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd");
+                if (!Directory.Exists(imgPathToday))
+                {
+                    Directory.CreateDirectory(imgPathToday);
+                }
+                //写入文件
+                var filename = Guid.NewGuid().ToString("N") + ".jpg";
+                jpg.Save(ConfigHelper.ReadSetting("imgPath") + "\\" + DateTime.Now.ToString("yyyyMMdd") + "\\" + filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                LogHelper.logger.Info("获取到文件：" + filename);
+                return filename;
+            }
+            else
+            {
+                LogHelper.logger.Warn("未能获取到图片数据");
+                return "";
             }
         }
     }
