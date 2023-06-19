@@ -25,7 +25,7 @@ namespace MioBot.Job
                 try
                 {
                     var json_news = DailyNews.Get();
-                    string str_news = "@image=" + json_news["tp1"]!.ToString() + "@";
+                    string str_news = "@image=" + json_news["data"]!["image"]!.ToString() + "@";
                     foreach (var item in group_number) 
                     {
                         Qmsg.Group(item, str_news);
@@ -54,7 +54,7 @@ namespace MioBot.Job
         {
             ITrigger trigger = TriggerBuilder.Create()
             .WithIdentity("DailyNews", "Daily")
-            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(8, 0))
+            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(8, 30))
             .Build();
             return trigger;
         }
@@ -103,7 +103,7 @@ namespace MioBot.Job
         {
             ITrigger trigger = TriggerBuilder.Create()
             .WithIdentity("MoyuCale", "Daily")
-            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(8, 0))
+            .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(9, 0))
             .Build();
             return trigger;
         }

@@ -22,7 +22,9 @@ namespace MioBot.Func_Ack
             };
             //推送消息
             int r = new Random().Next(msgList.Count);
-            Qmsg.Group(group, msgList[r]);
+            _ = r;
+            //Qmsg.Group(group, msgList[r]);
+            Qmsg.Group(group, "这个功能暂时停用啦…");
         }
     }
 }

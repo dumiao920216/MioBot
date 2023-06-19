@@ -14,6 +14,7 @@ using NLog;
 using System.Security.AccessControl;
 using System.Drawing.Printing;
 using System.Reflection.Metadata;
+using MioBot.Bot;
 
 namespace MioBot.Socket
 {
@@ -68,18 +69,24 @@ namespace MioBot.Socket
                 }
                 else if (str.Contains("美图"))
                 {
-                    Picture.Push(group, qq, str);
+                    //Picture.Push(group, qq, str);
+                    Qmsg.Group(group, "这个功能暂时被停用了喔…");
                 }
-                else if (str.Contains("小都状态"))
+                else if (str.Contains("状态"))
                 {
                     Status.Group(group);
+                }
+                else if (str.Contains("帮助"))
+                {
+                    Tips.Group(group);
                 }
             }
             else //处理私聊消息
             {
                 if (str.Contains("美图"))
                 {
-                    Picture.Send(qq, str);
+                    //Picture.Send(qq, str);
+                    Qmsg.Send(qq, "这个功能暂时被停用了喔…");
                 }
             }
         }

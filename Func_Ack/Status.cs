@@ -14,9 +14,9 @@ namespace MioBot.Func_Ack
         {
             //获取系统参数
             PerformanceCounter cpuOccupied = new("Processor", "% Processor Time", "_Total");
-            PerformanceCounter ramCounter = new("Memory", "Available MBytes");
+            PerformanceCounter ramCounter = new("Memory", "% Committed Bytes In Use");
             //推送消息
-            var msg = String.Format("当前CPU使用率{0}，内存使用率{1}", cpuOccupied.NextValue().ToString(),ramCounter.NextValue().ToString());
+            var msg = String.Format("当前系统CPU使用率{0}%，内存使用率{1}%。", cpuOccupied.NextValue().ToString(),ramCounter.NextValue().ToString());
             Qmsg.Group(group, msg);
         }
     }

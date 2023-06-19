@@ -2,7 +2,9 @@
 using MioBot.Helper;
 using MioBot.Job;
 using MioBot.Socket;
+using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 //初始化日志
 NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
