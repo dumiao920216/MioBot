@@ -2,6 +2,7 @@
 using MioBot.Helper;
 using MioBot.Job;
 using MioBot.Socket;
+using MioBot.Test;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -20,6 +21,9 @@ logger.Info("开始运行：网络监听");
 //启动WebApi
 Client.Start();
 logger.Info("开始运行：WebApi");
+
+//测试模块
+//Test.Test1();
 
 //初始化窗体
 while (true)
